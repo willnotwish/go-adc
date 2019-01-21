@@ -1,7 +1,7 @@
 # go-adc
 A really simple sampling routine to grab voltages from a MCP3008 ADC connected to a Raspberry Pi. Written in Go.
 
-Uses [go-rpio](https://github.com/stianeikeland/go-rpio) to talk to the MCP3008 A/D converter chip using the the Raspberry Pi's SPI interface.
+Uses [go-rpio](https://github.com/stianeikeland/go-rpio) to talk to the [MCP3008 A/D converter chip](http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf) using the the Raspberry Pi's SPI interface.
 
 ## Usage
 
