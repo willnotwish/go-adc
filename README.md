@@ -9,11 +9,15 @@ First, set up docker-machine to connect to your pi. I used a pi zero W, hence th
 
 Get, build and install the source on the pi, with something like this:
 
-```docker build --tag mytag .
-
-TODO: try cross compiling.
+```
+docker build --tag mytag .
+```
 
 Run the app like this:
 
 ```docker run -it --privileged mytag adc-cli --count=1000 --interval=10ms --output /results/fast.txt
+```
 
+## To do
+
+TODO: try cross compiling.
