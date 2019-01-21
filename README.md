@@ -10,14 +10,16 @@ First, set up docker-machine to connect to your pi. I used a pi zero W, hence th
 Get, build and install the source on the pi, with something like this
 
 ```
-docker build --tag mytag .
+docker build --tag go-adc .
 ```
 
 Run the app like this:
 
 ```
-docker run -it --privileged mytag adc-cli --count=1000 --interval=10ms --output /results/fast.txt
+docker run -it --privileged go-adc adc-cli --count=1000 --interval=10ms --output=/results/fast.txt
 ```
+
+Don't forget the --privileged flag. If you see a dev/mem error then the chances are you forgot to include it. Your Docker container needs access to /dev/mem in order to use memory-mapped io.
 
 ## To do
 

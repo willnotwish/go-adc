@@ -23,9 +23,9 @@ func main() {
   	panic(err)
   }
 
-  flag.IntVar(&sampleCount, "count", 1000, "number of samples to take.  defaults to 1000.")
-  flag.DurationVar(&interval, "interval", interval, "interval between samples.  defaults to 100ms")
-  flag.StringVar(&outputFilename, "output", "/results/output.txt", "output file name. defaults to /results/output.txt")
+  flag.IntVar(&sampleCount, "count", 1000, "number of samples to take")
+  flag.DurationVar(&interval, "interval", interval, "interval between samples")
+  flag.StringVar(&outputFilename, "output", "/results/output.txt", "output file name")
 
   flag.Parse()
 
@@ -51,8 +51,7 @@ func record(count int, file *os.File, interval time.Duration) {
 	bar := progressbar.New(count)
 	for i := 1; i < count; i++ {
 		voltage := float32(takeMCP3008Sample()) / 1023 * Vref
-		ts := time.Now().Format("15:04:00.000")
-		fmt.Fprintf(file, "%s %5.2f\n", ts, voltage)
+		fmt.Fprintf(file, "%s %5.2f\n", time.Now().Format("15:04:05.000"), voltage)
     bar.Add(1)
 		time.Sleep(interval)
 	}
