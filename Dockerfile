@@ -3,7 +3,7 @@ FROM arm32v6/golang:alpine
 
 # FROM arm32v7/golang # (eg, rpi model 3B+)
 
-WORKDIR /go/src/app
+WORKDIR /go/src/github.com/willnotwish/go-adc
 COPY . .
 
 RUN apk add --no-cache git \
@@ -13,3 +13,5 @@ RUN apk add --no-cache git \
     && apk del git
 
 CMD ["adc-cli", "--help"]
+
+# CMD ["ash"]
