@@ -1,0 +1,52 @@
+# dobi.yml
+
+meta:
+  project: go-adc
+  # default: dist
+
+image=i-backend:
+  image: willnotwish/dl-backend
+  context: backend
+  depends: [build-backend]
+  tags: ['latest']
+
+image=i-frontend:
+  image: willnotwish/dl-frontend
+  context: frontend
+  depends: [build-frontend]
+  tags: ['latest']
+
+image=gobuilder:
+  image: 'golang'
+  tags: ['latest']
+  pull: 24h
+
+image=node-alpine:
+  image: 'node'
+  tags: ['lts-alpine']
+  pull: 24h
+
+mount=backend:
+  bind: ./backend
+  path: /go/src/github.com/willnotwish/go-adc
+
+mount=frontend:
+  bind: ./frontend
+  path: /app
+
+job=build-backend:
+  use: gobuilder
+  artifact: backend/dist/arm32v6/adc-cli
+  mounts: [backend]
+  working-dir: /go/src/github.com/willnotwish/go-adc
+  command: 'make pi0w'
+
+job=build-frontend:
+  use: node-alpine
+  artifact: frontend/dist/
+  mounts: [frontend]
+  working-dir: /app
+  command: 'yarn run build'
+
+# alias=dist:
+#   tasks: ['i-backend:push', 'i-frontend:push']
