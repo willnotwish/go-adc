@@ -1,9 +1,11 @@
 # go-adc
-A really simple sampling routine to grab voltages from a MCP3008 ADC connected to a Raspberry Pi. Written in Go.
+Grabs voltages from a MCP3008 ADC connected to a Raspberry Pi. The back end is in Go, the front end in Vue.js.
 
-Uses [go-rpio](https://github.com/stianeikeland/go-rpio) to talk to an [MCP3008 A/D converter chip](http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf) connected via the Raspberry Pi's SPI interface.
+The back end uses the excellent[go-rpio](https://github.com/stianeikeland/go-rpio) to talk to an [MCP3008 A/D converter chip](http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf) connected via the Raspberry Pi's SPI interface. There are many tutorials which show you the hardware arrangement: it's pretty standard. Most of them gloss over the (mostly Python) software though. I wanted to do this in Go, not C.
 
-There are many tutorials which show you the hardware arrangement: it's pretty standard. Most of them gloss over the (mostly Python) software though. I wanted to do this in Go.
+The whole app is orchestrated using a docker compose.
+
+For me, the back end involved a journey back in time to my early days of C coroutines and cooperative multitasking. The front end helped me hone my Vue.js skills as far as Vuex and websockets are concerned.
 
 ## Usage
 
