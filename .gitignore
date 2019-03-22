@@ -27,7 +27,7 @@
 .DS_Store
 
 # local env files
-.env
+.env/*
 .env.local
 .env.*.local
 frontend/.env.development
