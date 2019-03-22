@@ -3,9 +3,9 @@ Grabs voltages from a MCP3008 ADC connected to a Raspberry Pi. The back end is i
 
 The back end uses the excellent[go-rpio](https://github.com/stianeikeland/go-rpio) to talk to an [MCP3008 A/D converter chip](http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf) connected via the Raspberry Pi's SPI interface. There are many tutorials which show you the hardware arrangement: it's pretty standard. Most of them gloss over the (mostly Python) software though. I wanted to do this in Go, not C.
 
-The whole app is orchestrated using a docker compose.
+The app is orchestrated using docker compose.
 
-For me, the back end involved a journey back in time to my early days of C coroutines and cooperative multitasking. The front end helped me hone my Vue.js skills as far as Vuex and websockets are concerned.
+The back end reminds me of my early days of C coroutines and cooperative multitasking. The front end uses Vuex, websockets and Bulma css.
 
 ## Usage
 
@@ -42,7 +42,7 @@ docker-machine ls
 if you've forgotten it. You should see an index page saying it's working.
 
 ### Cross compiling
-UPDATE: I got this working. In the end I wrote an old-school Makefile to do the dirty work. I had to re-learn some old stuff. But it works OK.
+In the end I wrote an old-school Makefile to do the dirty work. I had to re-learn some old stuff. But it works OK.
 
 ### Using the rpi's serial port to access external peripherals
 I purchased an ELM327L directly from the manufacturer in Canada. I avoided the temptation to buy a much cheaper Chinese clone. It runs directly from a 3.3V supply, so it should connect directly to the pi.
