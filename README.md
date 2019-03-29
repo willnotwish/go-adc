@@ -17,48 +17,36 @@ I started by attaching my multimeter to the 12V supply in the car. But I couldn'
 
 ## Hardware
 
-The basic arrangement is shown in Figure 1. The battery voltage in the car is dropped to a safe level with a simple voltage divider. It is then buffered with a unity gain op amp, before being fed into the ADC3008 A/D converter. The sampled voltages are read periodically (*i.e.*, **logged**) by the Raspberry Pi via its SPI (serial peripheral interface).
+The basic arrangement is shown in Figure 1. 
+
+<TDOO> Figure 1 here
+
+The battery voltage in the car is dropped to a safe level with a simple voltage divider. It is then buffered with a unity gain op amp, before being fed into the ADC3008 A/D converter. The sampled voltages are read periodically (*i.e.*, **logged**) by the Raspberry Pi via its SPI (serial peripheral interface).
 
 I originally started with a Raspberry Pi 3 Model B. I fried it when I accidentally shorted the 3V & 5V pins together. A £35 mistake. After that I took the cheaper route of a Zero W. I added some overvoltage protection in the form of another resistor and diode D1 to dump overvoltages into the 5V supply rail and limit the input into the ADC.
 
-## Usage
+### Workflow
 
-First, set up docker-machine to connect to your pi. I used a pi zero W. This uses ARMv6, not v7 as used by the pi 3.
+#### Back end
+1. Cross compile the back end Go code for the pi0w in a dedicated Docker container, producing the ```go-adc``` executable in the ```backend/dist/arm32v6``` directory.
+2. Build a Docker image based on ```arm32v6/alpine``` tagged ```dl-backend``` from the Go executable, using a the custom Dockerfile ```backend/Dockerfile``` and including the back end executable(s).
+3. Push the dl-backend image to Docker Hub.
+4. On the pi0w (using Docker Machine), pull the dl-backend image.
 
-Get, build and install the source on the pi, with something like this
+#### Front end
+1. Use ```yarn run build``` to build the Vue app in the ```frontend/dist``` directory.
+2. Write an Nginx config file to serve the front end spa, fwarding requests beginning /api to the Go back end.
+3. Build a Docker image based on ```arm32v6/nginx``` tagged ```dl-frontend``` including files from the frontend dist directory.
 
-```
-docker build --tag go-adc .
-```
+### In production
+Run docker-compose to orchestrate the two containers.
 
-Run the app (from the command line at first - to check it's working) like this:
-
-```
-docker run -it --privileged go-adc adc-cli --count=1000 --interval=10ms --output=/results/fast.txt
-```
-
-Don't forget the --privileged flag. If you see a /dev/mem error then the chances are you forgot to include it. The Docker container needs access to /dev/mem in order to use memory-mapped io. See [go-rpio](https://github.com/stianeikeland/go-rpio) for details.
-
-### As an IoT device
-
-Run up the included web server on the pi
-
-```
-docker run -it -p 3000:3000 go-adc httpd
-```
-
-and then browse to your pi's IP address on port 3000. Use docker-machine like this
-
-```
-docker-machine ls
-```
-
-if you've forgotten it. You should see an index page saying it's working.
+Don't forget the --privileged (or equivalent) flag. If you see a /dev/mem error then the chances are you forgot to include it. The Docker container needs access to /dev/mem in order to use memory-mapped io. See [go-rpio](https://github.com/stianeikeland/go-rpio) for details.
 
 ### Cross compiling
 In the end I wrote an old-school Makefile to do the dirty work. I had to re-learn some old stuff. But it works OK.
 
-### Using the rpi's serial port to access external peripherals
+### TODO: Use the rpi's serial port to access external peripherals
 I purchased an ELM327L directly from the manufacturer in Canada. I avoided the temptation to buy a much cheaper Chinese clone. It runs directly from a 3.3V supply, so it should connect directly to the pi.
 
 When I started to look at the pi's serial port offerings, I got confused. Here's my take on it, from https://www.raspberrypi.org/documentation/configuration/uart.md
@@ -75,39 +63,3 @@ The mini's transmit and receive pins are GPIO pins 14 & 15, which translates to 
 *Note.* When I accessed the pi via a Docker container, I was unable to see the ```/dev/serial0``` symlink, but I could access ```/dev/ttyS0``` OK using minicom. I shorted pins 14 & 15 together, and I could see the output transmitted back to the input.
 
 Hopefully, by using the mini UART for ELM327 comms, I can still use Bluetooth to control the pi (should I develop this idea further) in real time.
-
-### Extending the basic A/D sampler as a more functional data (voltage) logger
-Suppose I want to be able to access the sampler via a custom designed IoT web interface.
-
-Here's my idea.
-
-1. Serve a single page application, written in Vue.js via Nginx.
-2. The spa makes API requests to a back end Go server, which interacts with the MCP3008.
-
-The user interacts with the spa to view the latest voltage samples, to control the MCP3008 sampling rate and select the input channel(s) to use.
-
-### Workflow
-#### Back end
-1. Cross compile the back end Go code for the pi0w in a dedicated Docker container, producing the ```go-adc``` executable in the ```backend/dist``` directory.
-2. Build a Docker image based on ```arm32v6/alpine``` tagged ```dl-backend-arm32v6``` from the Go executable, using a custom Dockerfile ```backend/Dockerfile``` and including the back end executable(s).
-3. Push the go-adc-arm32v6 image to Docker Hub.
-4. On the pi0w (using Docker Machine), pull the go-adc-arm32v6 image.
-5. Run the back end with
-docker run --rm -it --privileged -p 8001:8001 -d willnotwish/go-adc-arm32v6:latest
-6. Monitor log with docker logs -f <id>
-
-#### Front end
-1. Use ```yarn run build``` to build the Vue app in the ```frontend/dist``` directory.
-2. Write an Nginx config file to serve the front end spa, fwarding requests beginning /api to the Go back end.
-3. Build a Docker image based on ```arm32v6/nginx``` tagged ```dl-frontend-arm32v6``` including files from the frontend dist directory.
-
-### Deployment
-Run docker-compose to orchestrate the two containers.
-
-
-
-
-
-Use vue-cli to generate the SPA. Develop this independently of the back end API.
-
-Build the SPA
