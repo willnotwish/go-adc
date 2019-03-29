@@ -13,6 +13,9 @@ module.exports = {
       '/api': {
         target: 'http://192.168.0.48'
       },
+      '/data': {
+        target: 'http://192.168.0.48'
+      },
       '/ws': {
         target: 'ws://192.168.0.48',
         ws: true

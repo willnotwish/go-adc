@@ -1,11 +1,25 @@
 # go-adc
 Grabs voltages from a MCP3008 ADC connected to a Raspberry Pi. The back end is in Go, the front end in Vue.js.
 
-The back end uses the excellent [go-rpio](https://github.com/stianeikeland/go-rpio) to talk to an [MCP3008 A/D converter chip](http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf) connected via the Raspberry Pi's SPI interface. There are many tutorials which show you the hardware arrangement: it's pretty standard. Most of them gloss over the (mostly Python) software though. I wanted to do this in Go, not C.
+The back end uses the excellent [go-rpio](https://github.com/stianeikeland/go-rpio) to talk to an [MCP3008 A/D converter chip](http://ww1.microchip.com/downloads/en/DeviceDoc/21295d.pdf) connected via the Raspberry Pi's SPI. There are many tutorials which show you the hardware arrangement: it's pretty standard. Most of them gloss over the (mostly Python) software though. I wanted to do this in Go, not C.
 
-The app is orchestrated using docker compose.
+The whole app is orchestrated using docker compose.
 
 The back end reminds me of my early days of C coroutines and cooperative multitasking. The front end uses Vuex, websockets and Bulma css.
+
+## Why?
+
+I needed to monitor the battery voltage on my old Mercedes.
+
+I wanted to get a feel for what the voltage was doing when pulling up at traffic lights: I could hear a change in the whine of the fuel pump and sometimes see the headlights going dim. At the same time I wanted to monitor the long-term state of the battery, which needed charging every few months during the winter.
+
+I started by attaching my multimeter to the 12V supply in the car. But I couldn't watch the meter while driving and it didn't record any activity for me to "replay" later. I needed some form of logger.
+
+## Hardware
+
+The basic arrangement is shown in Figure 1. The battery voltage in the car is dropped to a safe level with a simple voltage divider. It is then buffered with a unity gain op amp, before being fed into the ADC3008 A/D converter. The sampled voltages are read periodically (*i.e.*, **logged**) by the Raspberry Pi via its SPI (serial peripheral interface).
+
+I originally started with a Raspberry Pi 3 Model B. I fried it when I accidentally shorted the 3V & 5V pins together. A £35 mistake. After that I took the cheaper route of a Zero W. I added some overvoltage protection in the form of another resistor and diode D1 to dump overvoltages into the 5V supply rail and limit the input into the ADC.
 
 ## Usage
 

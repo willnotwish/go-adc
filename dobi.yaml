@@ -36,7 +36,7 @@ mount=frontend:
 
 job=build-backend:
   use: gobuilder
-  artifact: backend/dist/arm32v6/adc-cli
+  artifact: backend/dist/arm32v6/go-adc
   mounts: [backend]
   working-dir: /go/src/github.com/willnotwish/go-adc
   command: 'make pi0w'

@@ -60,3 +60,7 @@ func (h *Hub) run() {
     }
   }
 }
+
+func (h *Hub) stop() {
+  h.shutdown <- true
+}

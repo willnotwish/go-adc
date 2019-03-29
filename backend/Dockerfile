@@ -9,4 +9,4 @@ COPY dist/arm32v6/. .
 
 RUN mkdir /app/results
 
-CMD ["/app/adc-cli"]
+CMD ["/app/go-adc"]
