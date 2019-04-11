@@ -18,3 +18,10 @@ services:
     image: 'willnotwish/dl-frontend:latest'
     ports:
       - '80:80'
+
+  serial:
+    image: 'willnotwish/serial-port:latest'
+    devices:
+      - '/dev/ttyS0:/dev/ttyS0'
+    cap_add:
+      - sys_rawio

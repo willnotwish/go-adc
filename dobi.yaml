@@ -10,6 +10,13 @@ image=i-backend:
   depends: [build-backend]
   tags: ['latest']
 
+# In order to build
+image=i-serial:
+  image: willnotwish/serial-port
+  context: serial
+  # depends: [build-serial]
+  tags: ['latest']
+
 image=i-frontend:
   image: willnotwish/dl-frontend
   context: frontend
@@ -30,16 +37,29 @@ mount=backend:
   bind: ./backend
   path: /go/src/github.com/willnotwish/go-adc
 
+mount=serial:
+  bind: ./serial
+  path: /app
+
 mount=frontend:
   bind: ./frontend
   path: /app
 
+# To build the backend, we use a golang iamge and cross compile.
+# This is easy enough. I used an old school Makefile.
 job=build-backend:
   use: gobuilder
   artifact: backend/dist/arm32v6/go-adc
   mounts: [backend]
   working-dir: /go/src/github.com/willnotwish/go-adc
   command: 'make pi0w'
+
+# job=build-serial:
+#   use: node-alpine
+#   artifact: serial/dist/
+#   mounts: [serial]
+#   working-dir: /app
+#   command: 'ash'
 
 job=build-frontend:
   use: node-alpine

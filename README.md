@@ -45,21 +45,3 @@ Don't forget the --privileged (or equivalent) flag. If you see a /dev/mem error 
 
 ### Cross compiling
 In the end I wrote an old-school Makefile to do the dirty work. I had to re-learn some old stuff. But it works OK.
-
-### TODO: Use the rpi's serial port to access external peripherals
-I purchased an ELM327L directly from the manufacturer in Canada. I avoided the temptation to buy a much cheaper Chinese clone. It runs directly from a 3.3V supply, so it should connect directly to the pi.
-
-When I started to look at the pi's serial port offerings, I got confused. Here's my take on it, from https://www.raspberrypi.org/documentation/configuration/uart.md
-
-There are two UARTs: a PL011 (aka "full") and a cut down "mini". The full is (by default) used for Bluetooth on the zero W. To use the mini, you need to do two things:
-
-1. Reduce the pi's core_freq on of the GPU to 250MHz from its default of 400MHz. Do this by adding ```enable_uart=1``` to ```config.txt```. I'm not sure of the side effects, if any. Something will be slower, I presume. We'll have to wait and see.
-2. Tell Raspian not to use the mini for Linux console access. You can do this by editing ```/boot/cmdline.txt``` directly, removing the text ```console=serial0,115200``` (but leaving the rest of the line intact).
-
-I was able to do both these things with ```raspi-config```. Select options 5 & 6. After a reboot, I could see ```/dev/ttyS0``` and its symlink ```/dev/serial0```.
-
-The mini's transmit and receive pins are GPIO pins 14 & 15, which translates to pins 8 & 10 on the GPIO header.
-
-*Note.* When I accessed the pi via a Docker container, I was unable to see the ```/dev/serial0``` symlink, but I could access ```/dev/ttyS0``` OK using minicom. I shorted pins 14 & 15 together, and I could see the output transmitted back to the input.
-
-Hopefully, by using the mini UART for ELM327 comms, I can still use Bluetooth to control the pi (should I develop this idea further) in real time.
