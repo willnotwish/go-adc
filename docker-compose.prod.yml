@@ -29,4 +29,4 @@ services:
       - DEVICE=/dev/ttyS0
     stdin_open: true
     tty: true
-    command: 'node src/loopback_test'
+    command: 'node src/main.js'
