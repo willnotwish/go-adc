@@ -1,6 +1,6 @@
 # docker-compose.prod.yml
 
-version: '3.7'
+version: '3.6'
 
 services:
   backend:
@@ -25,3 +25,5 @@ services:
       - '/dev/ttyS0:/dev/ttyS0'
     cap_add:
       - sys_rawio
+    environment:
+      - DEVICE=/dev/ttyS0
