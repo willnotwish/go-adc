@@ -7,6 +7,7 @@ RUN apk update && \
 
 RUN npm install serialport --build-from-source --unsafe-perm
 RUN npm install serial-obd
+RUN npm install pusher
 
 # Copy built node modules and binaries without including the toolchain
 FROM arm32v6/node:alpine as app
