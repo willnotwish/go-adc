@@ -9,8 +9,13 @@ RUN npm install serialport --build-from-source --unsafe-perm
 
 # Copy built node modules and binaries without including the toolchain
 FROM arm32v6/node:alpine as app
-COPY --from=builder node_modules .
 
+WORKDIR /app
+
+# Copy node modules and binaries
+COPY --from=builder node_modules ./node_modules
+
+# Copy source etc
 COPY . .
 
-CMD ["node", "--version"]
+CMD ["node", "src/main.js"]

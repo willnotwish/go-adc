@@ -27,3 +27,6 @@ services:
       - sys_rawio
     environment:
       - DEVICE=/dev/ttyS0
+    stdin_open: true
+    tty: true
+    command: 'node src/loopback_test'

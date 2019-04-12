@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "serial-obd": "^0.2.2"
+  }
+}
