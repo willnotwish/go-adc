@@ -29,7 +29,6 @@ arm32v6: init get
 arm32v7: init get
 	GOOS=linux GOARCH=arm GOARM=7 $(GOBUILD) -o $(DIST)/$@/$(BINARY) ./cmd/main
 
-
 clean:
 	rm -fr $(DIST)
 

@@ -621,6 +621,11 @@ has-unicode@^2.0.0:
   resolved "https://registry.yarnpkg.com/has-unicode/-/has-unicode-2.0.1.tgz#e0e6fe6a28cf51138855e086d1691e771de2a8b9"
   integrity sha1-4Ob+aijPUROIVeCG0Wkedx3iqLk=
 
+influx@^5.0.7:
+  version "5.0.7"
+  resolved "https://registry.yarnpkg.com/influx/-/influx-5.0.7.tgz#35e65f6bf13cbaa1763108b5596a806a727a529a"
+  integrity sha1-NeZfa/E8uqF2MQi1WWqAanJ6Upo=
+
 info-symbol@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/info-symbol/-/info-symbol-0.1.0.tgz#27841d72867ddb4242cd612d79c10633881c6a78"

@@ -1,0 +1,11 @@
+# This needs to run on ARM architecture
+FROM arm32v6/node:alpine
+
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --production
+
+COPY . .
+
+CMD ["yarn", "run", "start"]

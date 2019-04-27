@@ -10,28 +10,95 @@ image=i-backend:
   depends: [build-backend]
   tags: ['latest']
 
-# In order to build
-image=i-serial:
-  image: willnotwish/serial-port
-  context: serial
-  # depends: [build-serial]
-  tags: ['latest']
+# Building an OBD image needs an ARM-compatible toolchain, eg for node-gyp.
+
+# One way to do this is to build the image on the target machine (the pi 0).
+# Trouble is, this will take too long. Better to use a 3B, targetting ARM32v6 as used on the pi 0.
+
+# I spent a while wrapping my head round this. Turns out I didn't understand enough about how Docker
+# builds images. Here is an excerpt from Docker's official documentation on the "build" command:
+
+#   The docker build command builds Docker images from a Dockerfile and a “context”.
+#   A build’s context is the set of files located in the specified PATH or URL.
+#   The build process can refer to any of the files in the context.
+#   For example, your build can use a COPY instruction to reference a file in the context.
+
+# The context (in my case a path to the relevant directory on my laptop)
+# is sent to the Docker engine via a socket. This socket can be
+# on my laptop (using Docker for Mac) or on any other machine running Docker.
+
+# It is possible, therefore, to build an image using the pi 3B by making sure its Docker engine
+# (via its socket) is used, rather than that running locally on my laptop. The choice of which Docker engine to
+# use is determined by some DOCKER_ environment variables.
+
+# This is how Docker Machine does it:
+
+# Nicks-MacBook-Pro:obd-api nick$ docker-machine env pi3bw
+# export DOCKER_TLS_VERIFY="1"
+# export DOCKER_HOST="tcp://192.168.0.51:2376"
+# export DOCKER_CERT_PATH="/Users/nick/.docker/machine/machines/pi3bw"
+# export DOCKER_MACHINE_NAME="pi3bw"
+# # Run this command to configure your shell:
+# # eval $(docker-machine env pi3bw)
+
+# Provided I set these environment variables, I can control which Docker engine builds the image.
+
+# For now, this means that I must set some per-task environment variables
+image=i-obd-elm327:
+  image: willnotwish/obd-elm327-arm32v6
+  context: obd-elm327
+  tags:
+    - latest
+    - 0.0.1
+
+image=i-obd-api:
+  image: willnotwish/obd-api-arm32v6
+  context: obd-api
+  dockerfile: Dockerfile.arm32v6
+  tags:
+    - latest
+    - 0.0.1
+
+image=i-influxdb:
+  image: willnotwish/influxdb-arm32v6
+  context: influxdb
+  tags:
+    - latest
+    - '{env.INFLUXDB_VERSION}'
+  args:
+    INFLUXDB_VERSION: '{env.INFLUXDB_VERSION}'
+  annotations:
+    description: "Builds influxdb container for ARM target"
+
 
 image=i-frontend:
   image: willnotwish/dl-frontend
   context: frontend
   depends: [build-frontend]
-  tags: ['latest']
+  tags:
+    - latest
 
 image=gobuilder:
   image: 'golang'
-  tags: ['latest']
+  tags:
+    - latest
   pull: 24h
 
 image=node-alpine:
   image: 'node'
   tags: ['lts-alpine']
   pull: 24h
+
+image=alpine:
+  image: 'alpine'
+  tags:
+    - latest
+  pull: 24h
+
+# image=arm-node-alpine:
+#   image: 'arm32v6/node'
+#   tags: ['alpine']
+#   pull: 24h
 
 mount=backend:
   bind: ./backend
@@ -45,6 +112,10 @@ mount=frontend:
   bind: ./frontend
   path: /app
 
+# mount=influxdb:
+#   bind: ./influxdb
+#   path: /go/src/github.com/influxdata
+
 # To build the backend, we use a golang iamge and cross compile.
 # This is easy enough. I used an old school Makefile.
 job=build-backend:
@@ -54,12 +125,11 @@ job=build-backend:
   working-dir: /go/src/github.com/willnotwish/go-adc
   command: 'make pi0w'
 
-# job=build-serial:
-#   use: node-alpine
-#   artifact: serial/dist/
-#   mounts: [serial]
-#   working-dir: /app
-#   command: 'ash'
+# # Same for influxdb for arm32v6
+# job=build-influxdb:
+#   use: gobuilder
+#   artifact: influxdv/dist/arm32v6/influxdb
+#   mounts: [influxdb]
 
 job=build-frontend:
   use: node-alpine
@@ -67,6 +137,3 @@ job=build-frontend:
   mounts: [frontend]
   working-dir: /app
   command: 'yarn run build'
-
-# alias=dist:
-#   tasks: ['i-backend:push', 'i-frontend:push']

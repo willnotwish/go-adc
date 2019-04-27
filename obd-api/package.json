@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.4.3",
+    "debug": "^4.1.1",
+    "dotenv": "^7.0.0",
+    "express": "^4.16.4",
+    "influx": "^5.0.7",
+    "jsonapi-serializer": "^3.6.4",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.18.11",
+    "redis": "^2.8.0"
+  },
+  "name": "obd-api",
+  "version": "0.0.1",
+  "description": "OBD api v1",
+  "main": "src/app.js",
+  "author": "Nick Adams",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src -d lib",
+    "start": "nodemon --exec babel-node ./src/bin/www.js"
+  }
+}

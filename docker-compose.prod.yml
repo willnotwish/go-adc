@@ -18,19 +18,54 @@ services:
     image: 'willnotwish/dl-frontend:latest'
     ports:
       - '80:80'
+    depends_on:
+      - backend
+      - obd-api
 
-  serial:
-    image: 'willnotwish/serial-port:latest'
+  obd-elm327:
+    image: 'willnotwish/obd-elm327-arm32v6:latest'
     devices:
       - '/dev/ttyS0:/dev/ttyS0'
     cap_add:
       - sys_rawio
+    env_file:
+      - .env/production/.pusher.env
+      - .env/production/.influxdb.env
     environment:
       - DEVICE=/dev/ttyS0
-      - PUSHER_APP_ID=758098
-      - PUSHER_APP_KEY=5b6bc4f109e5cb514bb1
-      - PUSHER_APP_SECRET=d59424493a31b8719d50
-      - PUSHER_APP_CLUSTER=eu
-    stdin_open: true
-    tty: true
+      - DEBUG=obd:main
     command: 'node src/main.js'
+    depends_on:
+      - redis
+      - influxdb
+    restart: always
+
+  obd-api:
+    image: 'willnotwish/obd-api-arm32v6:latest'
+    ports:
+      - '5000:5000'
+    depends_on:
+      - redis
+      - influxdb
+    env_file:
+      - .env/production/.redis.env
+      - .env/production/.influxdb.env
+    environment:
+      - DEBUG=obd-api:*
+    restart: always
+
+  redis:
+    image: arm32v6/redis:alpine3.9
+    ports:
+      - '6379:6379'
+    env_file:
+      - .env/production/.redis.env
+    restart: always
+
+  influxdb:
+    image: willnotwish/influxdb-arm32v6:1.7.6
+    ports:
+      - '8086:8086'
+    env_file:
+      - .env/production/.influxdb.env
+    restart: always
