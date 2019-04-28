@@ -1,8 +1,8 @@
 {
-  "name": "obd-elm327",
-  "version": "0.0.2",
-  "description": "OBD ELM327 data logger",
-  "main": "src/main.js",
+  "name": "obd-simulator",
+  "version": "0.0.1",
+  "description": "Publishes fake OBD data",
+  "main": "index.js",
   "author": "Nick Adams",
   "license": "MIT",
   "dependencies": {
@@ -11,11 +11,10 @@
     "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.4.4",
     "debug": "^4.1.1",
-    "redis": "^2.8.0",
-    "serial-obd": "^0.2.2"
+    "redis": "^2.8.0"
   },
   "scripts": {
     "build": "babel src -d lib",
-    "start": "babel-node ./src/main.js"
+    "start": "babel-node index.js"
   }
 }

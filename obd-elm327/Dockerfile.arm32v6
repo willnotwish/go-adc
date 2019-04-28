@@ -5,14 +5,16 @@ FROM arm32v6/node:alpine as builder
 RUN apk update && \
   apk add --no-cache make gcc g++ python linux-headers udev
 
-# Compile native add ons
-RUN npm install serialport --build-from-source --unsafe-perm
-RUN npm install serial-obd --build-from-source --unsafe-perm
+# Install all NPM packagaes, building natively as required (eg serialport)
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --production
 
 # Copy built node modules and binaries without including the toolchain
 FROM arm32v6/node:alpine as app
 
 WORKDIR /app
 
-# Copy node modules and binaries
 COPY --from=builder node_modules ./node_modules
+COPY . .
+
+CMD ["yarn", "run", "start"]

@@ -1,0 +1,73 @@
+# docker-compose.prod.yml
+
+version: '3.6'
+
+services:
+  # backend:
+  #   image: 'willnotwish/dl-backend:latest'
+  #   ports:
+  #     - '8001:8001'
+  #   devices:
+  #     - '/dev/mem:/dev/mem'
+  #   cap_add:
+  #     - sys_rawio
+  #   env_file:
+  #     - .env/production/.auth0.env
+
+  # frontend:
+  #   image: 'willnotwish/dl-frontend:latest'
+  #   ports:
+  #     - '80:80'
+  #   depends_on:
+  #     - backend
+  #     - obd-api
+
+  obd-simulator:
+    image: 'willnotwish/obd-simulator:latest'
+    env_file:
+      - .env/development/.redis.env
+    environment:
+      - DEBUG=obd-simulator:index
+    # depends_on:
+    #   - redis
+    restart: always
+
+  obd-influxdb:
+    image: willnotwish/obd-influxdb-amd64:latest
+    env_file:
+      - .env/development/.redis.env
+      - .env/development/.influxdb.env
+    environment:
+      - DEBUG=obd-influxdb:*
+    depends_on:
+      - redis
+      - influxdb
+    restart: always
+
+  # obd-api:
+  #   image: 'willnotwish/obd-api-arm32v6:latest'
+  #   ports:
+  #     - '5000:5000'
+  #   depends_on:
+  #     - influxdb
+  #   env_file:
+  #     - .env/production/.influxdb.env
+  #   environment:
+  #     - DEBUG=obd-api:*
+  #   restart: always
+
+  redis:
+    image: redis:alpine3.9
+    ports:
+      - '6379:6379'
+    env_file:
+      - .env/development/.redis.env
+    restart: always
+
+  influxdb:
+    image: influxdb:1.7.6-alpine
+    ports:
+      - '8086:8086'
+    env_file:
+      - .env/development/.influxdb.env
+    restart: always

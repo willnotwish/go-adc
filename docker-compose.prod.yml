@@ -29,12 +29,21 @@ services:
     cap_add:
       - sys_rawio
     env_file:
-      - .env/production/.pusher.env
-      - .env/production/.influxdb.env
+      - .env/production/.redis.env
     environment:
       - DEVICE=/dev/ttyS0
       - DEBUG=obd:main
-    command: 'node src/main.js'
+    depends_on:
+      - redis
+    restart: always
+
+  obd-influxdb:
+    image: willnotwish/obd-influxdb-arm32v6:latest
+    env_file:
+      - .env/production/.redis.env
+      - .env/production/.influxdb.env
+    environment:
+      - DEBUG=obd-influxdb:*
     depends_on:
       - redis
       - influxdb
@@ -45,10 +54,8 @@ services:
     ports:
       - '5000:5000'
     depends_on:
-      - redis
       - influxdb
     env_file:
-      - .env/production/.redis.env
       - .env/production/.influxdb.env
     environment:
       - DEBUG=obd-api:*

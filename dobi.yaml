@@ -43,13 +43,46 @@ image=i-backend:
 
 # Provided I set these environment variables, I can control which Docker engine builds the image.
 
-# For now, this means that I must set some per-task environment variables
 image=i-obd-elm327:
   image: willnotwish/obd-elm327-arm32v6
   context: obd-elm327
+  dockerfile: Dockerfile.arm32v6
+  tags:
+    - latest
+    - 0.0.2
+
+image=i-obd-simulator:
+  image: willnotwish/obd-simulator
+  context: obd-simulator
   tags:
     - latest
     - 0.0.1
+
+image=i-obd-influxdb-arm32v6:
+  image: willnotwish/obd-influxdb-arm32v6
+  context: obd-influxdb
+  tags:
+    - latest
+    - 0.0.1
+  args:
+    base: 'arm32v6/node:alpine'
+  annotations:
+    description: "Subscribes to OBD PID values and writes them to InfluxDB. For ARM."
+
+image=i-obd-influxdb-amd64:
+  image: willnotwish/obd-influxdb-amd64
+  context: obd-influxdb
+  tags:
+    - latest
+    - 0.0.1
+  args:
+    base: 'node:alpine'
+  annotations:
+    description: "Subscribes to OBD PID values and writes them to InfluxDB. For AMD64"
+
+alias=i-obd-influxdb:
+  tasks:
+    - i-obd-influxdb-arm32v6
 
 image=i-obd-api:
   image: willnotwish/obd-api-arm32v6
